@@ -67,6 +67,19 @@ python train.py
 
 CIFAR-10 downloads itself the first time, about 170 MB, and is cached after that.
 
+## Tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
+The suite runs in about a second and never downloads the dataset or trains.
+It checks the forward pass shape, the preprocessing transform's range, the
+parameter count quoted above, and that prediction returns a known label with a
+probability. Randomly initialized weights are enough for all of that, since
+these test the contract rather than the accuracy.
+
 ## Classify your own image
 
 ```bash
@@ -78,10 +91,12 @@ Returns the predicted class and a confidence score. The same resize, tensor, and
 ## Layout
 
 ```
-model.py           the SmallCNN definition
+model.py           the SmallCNN definition and the shared transform
 train.py           data loading, training loop, evaluation
 predict.py         single-image inference
+test_model.py      tests, no dataset needed
 requirements.txt
+requirements-dev.txt
 ```
 
 ## What I would do next
