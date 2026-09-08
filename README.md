@@ -1,5 +1,7 @@
 # Cats vs Dogs CNN
 
+[![CI](https://github.com/Ronyboxer/cats-vs-dogs-cnn/actions/workflows/ci.yml/badge.svg)](https://github.com/Ronyboxer/cats-vs-dogs-cnn/actions/workflows/ci.yml)
+
 A convolutional neural network written from scratch in PyTorch that classifies an image as a cat or a dog. No pretrained weights, no high-level wrapper library. Every layer is defined by hand so I could see exactly what the network is doing.
 
 Trains on a CPU in a few minutes.
