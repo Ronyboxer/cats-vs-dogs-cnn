@@ -14,18 +14,16 @@ from PIL import Image
 from model import CLASSES, DEVICE, MODEL_PATH, SmallCNN, build_transform
 
 
-def predict(image_path):
-    if not os.path.exists(MODEL_PATH):
-        print(f"[predict] No saved model at '{MODEL_PATH}'. Run 'python train.py' first.")
-        return 1
-    if not os.path.exists(image_path):
-        print(f"[predict] No such image: '{image_path}'")
-        return 1
-
+def load_model(weights_path=MODEL_PATH):
+    """Rebuild the network and load trained weights into it."""
     model = SmallCNN().to(DEVICE)
-    model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
+    model.load_state_dict(torch.load(weights_path, map_location=DEVICE))
     model.eval()
+    return model
 
+
+def classify(model, image_path):
+    """Return (label, confidence) for one image. Confidence is 0..1."""
     transform = build_transform()
 
     # Force RGB in case the image is grayscale or has an alpha channel, then
@@ -37,9 +35,21 @@ def predict(image_path):
         probs = F.softmax(model(tensor), dim=1)
         confidence, predicted = torch.max(probs, 1)
 
-    label = CLASSES[predicted.item()]
+    return CLASSES[predicted.item()], confidence.item()
+
+
+def predict(image_path, weights_path=MODEL_PATH):
+    """Command-line entry point. Prints the result, returns an exit code."""
+    if not os.path.exists(weights_path):
+        print(f"[predict] No saved model at '{weights_path}'. Run 'python train.py' first.")
+        return 1
+    if not os.path.exists(image_path):
+        print(f"[predict] No such image: '{image_path}'")
+        return 1
+
+    label, confidence = classify(load_model(weights_path), image_path)
     print(f"[predict] '{image_path}'  ->  {label}  "
-          f"(confidence: {confidence.item() * 100:.1f}%)")
+          f"(confidence: {confidence * 100:.1f}%)")
     return 0
 
 
